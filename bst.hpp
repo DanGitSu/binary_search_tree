@@ -131,6 +131,7 @@ private:
     // correcting the heights.
     // You can imlement this, or correct the heights another way
     //void fix_height(Node* node);
+    void fix_height(Node* node);
 
     // The rest of these functions are already implemented
 
@@ -181,11 +182,23 @@ void BST<T>::delete_subtree(Node* node)
     delete node;
 }
 
+template <typename T>
+void BST<T>::fix_height(Node * node)
+{
+    Node * curr = node;
 
-// void BST<T>::fix_height(Node * node)
-// {
+    int heightCounter = 0;          // start case
+    node->height = heightCounter;
+    heightCounter++;
 
-// }
+    while(node->parent != nullptr){ // upward traversal
+        curr = node->parent;
+        node->height=heightCounter; // change height to current height from added node
+        heightCounter++;            // iterate
+    }
+    node->height=heightCounter;     // for root node
+}
+
 
 //*** For you to implement
 template <typename T>
@@ -310,6 +323,8 @@ void BST<T>::rotate_right(Node* node)
 
     // Correct height of ancestors of node 
     // fix_height(node);
+
+    
 }
 
 // The rest of the functions below are already implemented
