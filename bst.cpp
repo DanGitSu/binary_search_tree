@@ -17,9 +17,6 @@ int main()
         my_test.test_delete_min();
         my_test.test_delete_min_heights();
         my_test.test_successor();
-        my_test.test_successor_max();
-        my_test.test_erase();
-        my_test.test_erase_heights();
         my_test.test_erase_root();
         my_test.test_erase_successor_child();
         my_test.test_rotate_right();

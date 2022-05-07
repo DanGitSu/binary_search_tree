@@ -182,21 +182,33 @@ void BST<T>::delete_subtree(Node* node)
     delete node;
 }
 
+
 template <typename T>
 void BST<T>::fix_height(Node * node)
 {
-    Node * curr = node;
+    // Node * curr = node;
+    // int heightCounter = 1;          // start case on previous node
+    // node->height = heightCounter;
+    // heightCounter++;
 
-    int heightCounter = 0;          // start case
-    node->height = heightCounter;
-    heightCounter++;
-
-    while(node->parent != nullptr){ // upward traversal
-        curr = node->parent;
-        node->height=heightCounter; // change height to current height from added node
-        heightCounter++;            // iterate
+    // while(curr != nullptr){ // upward traversal
+    //     curr = curr->parent;
+    //     node->height=heightCounter; // change height to current height from added node
+    //     heightCounter++;            // iterate
+    // }
+    // node->height=heightCounter;     // for root node
+    if (node->parent == nullptr){
+        return;
     }
-    node->height=heightCounter;     // for root node
+
+    int heightCounter = 1;
+    Node * curr = node;
+    while (curr->parent != nullptr){
+        if (curr->height < heightCounter) curr->height = heightCounter;
+        curr = curr->parent;
+        heightCounter++;
+    }
+    if (curr->height < heightCounter) curr->height = heightCounter;
 }
 
 
@@ -251,6 +263,7 @@ void BST<T>::insert(T k)
     {
         prev_node->left= new Node(k, prev_node);
     }
+    fix_height(prev_node);
     ++size_;
 }
 
