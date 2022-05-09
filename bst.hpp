@@ -182,47 +182,27 @@ void BST<T>::delete_subtree(Node* node)
     delete node;
 }
 
-
+// added myself
 template <typename T>
-void BST<T>::fix_height(Node * node)
+void BST<T>::fix_height(Node * node) // fix height will update the heights of nodes when recently added
 {
-    // Node * curr = node;
-    // int heightCounter = 1;          // start case on previous node
-    // node->height = heightCounter;
-    // heightCounter++;
-
-    // while(curr != nullptr){ // upward traversal
-    //     curr = curr->parent;
-    //     node->height=heightCounter; // change height to current height from added node
-    //     heightCounter++;            // iterate
-    // }
-    // node->height=heightCounter;     // for root node
-    if (node->parent == nullptr){
+    if (node->parent == nullptr){ // for empty case
         return;
     }
 
-    int heightCounter = 1;
+    int heightCounter = 1;              // start case will always be height 1 from previously added
     Node * curr = node;
-    while (curr->parent != nullptr){
+    while (curr->parent != nullptr){    // upward traversal until parent node
         if (curr->height < heightCounter) curr->height = heightCounter;
-        curr = curr->parent;
-        heightCounter++;
+        curr = curr->parent;            // iteration
+        heightCounter++;                
     }
-    if (curr->height < heightCounter) curr->height = heightCounter;
+    if (curr->height < heightCounter) curr->height = heightCounter; // for root node
 }
 
-
-//*** For you to implement
 template <typename T>
 void BST<T>::insert(T k)
 {
-    // You can mostly follow your solution from Week 9 lab here
-    // Add functionality to set the parent pointer of the new node created
-    // ++size_;
-    // Also remember to correct the heights on the path from the newly
-    // inserted node to the root.
-    // fix_height(start_fix);
-
     // node will iterate down through the tree starting from the root
     Node* node = root_;
     // prev_node will hold node's parent
@@ -279,8 +259,40 @@ typename BST<T>::Node* BST<T>::successor(T k)
     // In other words, it is the node where we last took a left turn when 
     // searching for the key k.
 
-    // dummy return value so compiler does not complain
-    return root_;
+
+    Node* node = root_;     // traversal node
+    Node* last_left = node; // traversal history
+
+    if(node->key == k)
+    {
+        return node;
+    }
+
+    while(node != nullptr)
+    {
+        // finding  K
+        if (k > node->key)
+        {
+            node = node->right;
+        }
+        else if (k < node->key)
+        {
+            last_left = node;
+            node = node->left;
+        }
+        else
+        {
+            if (node->right == nullptr) return last_left->key; // if node with k is the end of its branch, the last left is successor
+            else node = node->right;
+            while (node->left != nullptr)   // travel to left most node on right subtree of k
+            {
+                node = node->left;
+            }
+            return node;                    // return successor
+        }
+
+        
+    return nullptr; // return nullptr when k is not found
 }
 
 //*** For you to implement
