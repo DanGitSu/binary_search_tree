@@ -190,7 +190,7 @@ void BST<T>::fix_height(Node * node) // fix height will update the heights of no
         return;
     }
 
-    int heightCounter = 1;              // start case will always be height 1 from previously added
+    int heightCounter = 0;              // start case will always be height 0
     Node * curr = node;
     while (curr->parent != nullptr){    // upward traversal until parent node
         if (curr->height < heightCounter) curr->height = heightCounter;
@@ -235,15 +235,9 @@ void BST<T>::insert(T k)
         }
     }
     // new node is either left or right child of prev_node
-    if(went_right)
-    {
-        prev_node->right= new Node(k, prev_node);
-    }
-    else
-    {
-        prev_node->left= new Node(k, prev_node);
-    }
-    fix_height(prev_node);
+    Node* new_node = new Node(k,prev_node);
+    went_right ? prev_node->right = new_node : prev_node->left = new_node;
+    fix_height(new_node);
     ++size_;
 }
 
@@ -299,16 +293,27 @@ template <typename T>
 void BST<T>::delete_min()
 {
 
-    if (root_)
-    // if tree is empty just return.
-    Node* min_node = min();
-    // Now update pointers to remove min_node from the tree
-
-    delete min_node;
-    --size_;
-    fix_height(min());
-
-    
+    if (root_ == nullptr) // if empty tree
+    {
+        return;
+    }
+    else
+    {
+        Node* min_node = min();
+        if (root_ == min_node)
+        {
+            min_node = min_node->right;
+            root_ = min_node;
+        }
+        else
+        {
+            Node* par = min_node->parent;
+            par->left = min_node->right;
+            if (min_node->right != nullptr) min_node->right->parent = par;
+            fix_height(par);
+            size_--;
+        }
+    }    
 }
 
 //*** For you to implement
