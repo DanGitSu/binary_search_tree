@@ -247,7 +247,7 @@ void BST<T>::insert(T k)
     ++size_;
 }
 
-//*** For you to implement
+// return the smallest node with a key larger than the node with k
 template <typename T>
 typename BST<T>::Node* BST<T>::successor(T k)
 {
@@ -282,7 +282,7 @@ typename BST<T>::Node* BST<T>::successor(T k)
         }
         else
         {
-            if (node->right == nullptr) return last_left->key; // if node with k is the end of its branch, the last left is successor
+            if (node->right == nullptr) return last_left; // if node with k is the end of its branch, the last left is successor
             else node = node->right;
             while (node->left != nullptr)   // travel to left most node on right subtree of k
             {
@@ -290,8 +290,7 @@ typename BST<T>::Node* BST<T>::successor(T k)
             }
             return node;                    // return successor
         }
-
-        
+    }
     return nullptr; // return nullptr when k is not found
 }
 
@@ -300,13 +299,16 @@ template <typename T>
 void BST<T>::delete_min()
 {
 
+    if (root_)
     // if tree is empty just return.
-    //Node* min_node = min();
+    Node* min_node = min();
     // Now update pointers to remove min_node from the tree
 
-    //delete min_node;
-    //--size_;
-    //fix_height(start_fix);
+    delete min_node;
+    --size_;
+    fix_height(min());
+
+    
 }
 
 //*** For you to implement

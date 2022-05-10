@@ -96,7 +96,16 @@ public:
             tree.insert(x);
         }
         std::vector<int> your_heights = tree.your_postorder_heights(); 
-        std::vector<int> real_heights = tree.real_postorder_heights(); 
+        std::vector<int> real_heights = tree.real_postorder_heights();
+        // for (int i: your_heights) // added to assist with debugging
+        // {
+        //     std::cout << i << '\n';
+        // }
+        // std::cout << "\n";
+        // for (int i: real_heights)
+        // {
+        //     std::cout << i << '\n';
+        // }
         assert(!your_heights.empty());
         assert(your_heights == real_heights);
         std::cout << "passed test_insert_heights\n";
@@ -345,4 +354,3 @@ public:
 };
 
 #endif
-
