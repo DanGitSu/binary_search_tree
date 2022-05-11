@@ -141,7 +141,16 @@ public:
         }
         tree.delete_min();
         std::vector<int> your_heights = tree.your_postorder_heights(); 
-        std::vector<int> real_heights = tree.real_postorder_heights(); 
+        std::vector<int> real_heights = tree.real_postorder_heights();
+        for (int i: your_heights) // added to assist with debugging
+        {
+            std::cout << i << '\n';
+        }
+        std::cout << "\n";
+        for (int i: real_heights)
+        {
+            std::cout << i << '\n';
+        }
         assert(!your_heights.empty());
         assert(your_heights == real_heights);
         std::cout << "passed test_delete_min_heights\n";
@@ -164,6 +173,8 @@ public:
         {
             unsigned index = index_dist(mt);
             BST<int>::Node* node = tree.successor(vec[index]);
+            std::cout << vec[index+1] << "\n";
+            std::cout << node->key << "\n\n";
             assert(node != nullptr);
             assert(node->key == vec[index+1]);
         }

@@ -310,7 +310,7 @@ void BST<T>::delete_min()
             Node* par = min_node->parent;
             par->left = min_node->right;
             if (min_node->right != nullptr) min_node->right->parent = par;
-            fix_height(par);
+            fix_height(min());
             size_--;
         }
     }    
