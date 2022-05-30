@@ -132,6 +132,7 @@ private:
     // You can imlement this, or correct the heights another way
     //void fix_height(Node* node);
     void fix_height(Node* node);
+    void fix_height(Node* node, int start);
 
     // The rest of these functions are already implemented
 
@@ -201,6 +202,19 @@ void BST<T>::fix_height(Node * node) // fix height will update the heights of no
 }
 
 template <typename T>
+void BST<T>::fix_height(Node * node, int start) // fix height will update the heights of nodes when recently added
+{
+    int heightCounter = start;              // start case 
+    Node * curr = node;
+    while (curr->parent != nullptr){    // upward traversal until parent node
+        curr->height = heightCounter;
+        curr = curr->parent;            // iteration
+        heightCounter++;                
+    }
+    if (curr->height < heightCounter) curr->height = heightCounter; // for root node
+}
+
+template <typename T>
 void BST<T>::insert(T k)
 {
     // node will iterate down through the tree starting from the root
@@ -255,11 +269,11 @@ typename BST<T>::Node* BST<T>::successor(T k)
 
 
     Node* node = root_;     // traversal node
-    Node* last_left = node; // traversal history
+    Node* last_left = nullptr; // traversal history
 
     if(node->key == k)
     {
-        return node;
+        return nullptr;
     }
 
     while(node != nullptr)
@@ -276,8 +290,9 @@ typename BST<T>::Node* BST<T>::successor(T k)
         }
         else
         {
-            if (node->right == nullptr) return last_left; // if node with k is the end of its branch, the last left is successor
-            else node = node->right;
+            if (node -> right == nullptr && last_left == nullptr) return nullptr; // if never turned left and end of tree then max
+            else if (node -> right == nullptr) return last_left;
+            node = node -> right; // moving to right subtree
             while (node->left != nullptr)   // travel to left most node on right subtree of k
             {
                 node = node->left;
@@ -292,7 +307,6 @@ typename BST<T>::Node* BST<T>::successor(T k)
 template <typename T>
 void BST<T>::delete_min()
 {
-
     if (root_ == nullptr) // if empty tree
     {
         return;
@@ -300,17 +314,23 @@ void BST<T>::delete_min()
     else
     {
         Node* min_node = min();
-        if (root_ == min_node)
+        if (root_ == min_node) // if root is the minimum node set its right to root_
         {
-            min_node = min_node->right;
-            root_ = min_node;
+            if (root_ -> right != nullptr)
+            {
+                root_ = root_ -> right;
+                root_ -> parent = nullptr;
+            }
+
+            size_--;
+            fix_height(root_);
         }
         else
         {
             Node* par = min_node->parent;
             par->left = min_node->right;
             if (min_node->right != nullptr) min_node->right->parent = par;
-            fix_height(min());
+            fix_height(par);
             size_--;
         }
     }    
@@ -338,6 +358,61 @@ void BST<T>::erase(T k)
     // --size_;
     // fix the heights from the bottom-most node affected by the changes
     //fix_height(start_fix);
+
+
+    // as find() returns root_ when node k is not found we must make sure that
+    // node_to_remove is actually root_ rather than it not being found
+
+    Node* node_to_remove = find(k);
+    if (node_to_remove -> key != k) return;
+    else if (node_to_remove -> left == nullptr && node_to_remove -> right == nullptr) // node to remove has no children
+    {
+        Node* par = node_to_remove -> parent;
+        if (node_to_remove == root_) root_ = nullptr;
+        else
+        {
+            if (node_to_remove -> parent -> right == node_to_remove)
+            {
+                node_to_remove -> parent -> right = nullptr;
+            }
+            else
+            {
+                node_to_remove -> parent -> left = nullptr;
+            }
+        }
+        size_--;
+    }
+    else if (node_to_remove -> left != nullptr && node_to_remove -> right != nullptr) // case where both children exist
+    {
+        Node *replace = min(node_to_remove -> right);
+        int val = replace -> key;
+        erase(replace -> key);
+        node_to_remove -> key = val;
+        size_--;
+    }
+    else // for one child node
+    {
+        Node* replace;
+        if (node_to_remove -> right != nullptr)
+        {
+            replace = node_to_remove -> right;
+        }
+        else
+        {
+            replace = node_to_remove -> left;
+        }
+
+        if (node_to_remove == node_to_remove -> parent -> right) // if parents right node
+        {
+            node_to_remove -> parent -> right = replace;
+        }
+        else
+        {
+            node_to_remove -> parent -> left = replace;
+        }
+        size_--;
+    }
+    
 }
 
 //*** For you to implement
@@ -346,7 +421,7 @@ void BST<T>::rotate_right(Node* node)
 {
     // Assumptions: node is not nullptr and must have a left child
 
-    // Node* move_up_node = node->left;  
+    
     
     // There are 3 pairs (parent and child) of pointers to change
     // 1) node's left child becomes move_up_node's right child
@@ -355,8 +430,32 @@ void BST<T>::rotate_right(Node* node)
 
     // Correct height of ancestors of node 
     // fix_height(node);
-
     
+    Node* par = node->parent;
+    Node* root = node->left;
+    node -> left = root->right;
+
+
+    if (root -> right != nullptr) // if there are no nodes on right of node->left update parent
+    {
+        root -> right -> parent = node;
+    }
+    root -> right = node;
+    root -> parent = par;
+    node -> parent = root;
+    if (par != nullptr)     // update original parent
+    {
+        if (par -> right == node)
+        {
+            par -> right = root;
+        }else
+        {
+            par -> left = root;
+        }
+    }
+    root_ = root;
+    // Correct height of ancestors of node 
+    fix_height(node);
 }
 
 // The rest of the functions below are already implemented
@@ -514,4 +613,5 @@ T BST<T>::get_root_value()
 }
 
 #endif
+
 
